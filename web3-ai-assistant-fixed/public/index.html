@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web3 AI 钱包助手</title>
+</head>
+<body>
+  <h1>Web3 AI 钱包助手</h1>
+  <input type="text" id="address" placeholder="输入钱包地址" style="width: 300px;">
+  <button onclick="analyzeWallet()">分析</button>
+
+  <h2>资产信息：</h2>
+  <pre id="assets"></pre>
+
+  <h2>AI分析：</h2>
+  <pre id="analysis"></pre>
+
+  <script>
+    async function analyzeWallet() {
+      const address = document.getElementById('address').value;
+      document.getElementById('assets').innerText = '查询中...';
+      document.getElementById('analysis').innerText = '分析中...';
+
+      try {
+        const res = await fetch('/api/fetchWallet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById('assets').innerText = JSON.stringify(data.assets, null, 2);
+          document.getElementById('analysis').innerText = data.analysis;
+        } else {
+          document.getElementById('assets').innerText = '❌ 查询失败';
+          document.getElementById('analysis').innerText = data.detail?.message || '❌ 分析失败';
+        }
+      } catch (err) {
+        document.getElementById('assets').innerText = '❌ 查询失败';
+        document.getElementById('analysis').innerText = '❌ 分析失败';
+      }
+    }
+  </script>
+
+</body>
+</html>
